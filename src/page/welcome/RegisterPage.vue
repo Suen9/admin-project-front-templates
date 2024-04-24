@@ -58,7 +58,10 @@
               </el-form-item>
             </el-col>
             <el-col :span="7">
-              <el-button style="width: 105px" @click="" type="success">获取验证码</el-button>
+              <el-button style="width: 105px" @click="sendEmailCode" type="success"
+                         :disabled="!isEmailValid || coldTime > 0">
+                {{ coldTime > 0 ? '请稍后 ' + coldTime + ' 秒' : '获取验证码' }}
+              </el-button>
             </el-col>
           </el-row>
         </el-form>
@@ -138,6 +141,21 @@ const toLoginPage = () => {
   router.push('/');
 }
 
+const sendEmailCode = () => {
+  countDown();
+};
+
+
+const countDown = () => {
+  coldTime.value = 60;
+  const timer = setInterval(() => {
+    coldTime.value--;
+    if (coldTime.value === 0) {
+      clearInterval(timer);
+    }
+  }, 1000);
+};
+
 const register = () => {
   registerFormRef.value.validate((isValid) => {
     if (isValid) {
@@ -147,6 +165,7 @@ const register = () => {
     }
   })
 }
+
 </script>
 
 <style scoped>
