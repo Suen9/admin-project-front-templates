@@ -3,7 +3,7 @@
     <div style="margin: 20px 30px; text-align: center">
       <div style="margin-top: 10px;font-size: 24px; font-weight: bold">用户登录</div>
       <div style="margin-top: 10px;font-size: 15px; color: gray">在进入系统之前请先输入用户名和密码进行登录</div>
-      <el-form :model="loginForm" style="margin-top: 40px">
+      <el-form :model="loginForm" :rules="loginRules" ref="loginFormRef" style="margin-top: 40px">
         <el-form-item prop="username">
           <el-input v-model="loginForm.username" placeholder="用户名/邮箱">
             <template #prefix>
@@ -34,7 +34,7 @@
         </el-row>
       </el-form>
       <div style="margin-top: 50px">
-        <el-button style="width: 270px" type="success" @click="login()" plain>立即登录</el-button>
+        <el-button style="width: 270px" type="success" @click="userLogin()" plain>立即登录</el-button>
       </div>
       <el-divider>
         <span style="color: grey;font-size: 13px">没有账号</span>
@@ -47,17 +47,26 @@
 </template>
 
 <script setup>
-import {reactive} from 'vue';
+import {reactive, ref} from 'vue';
 import {Lock, User} from "@element-plus/icons-vue";
 import {ElMessage} from "element-plus";
 import router from "@/router";
-import axios from "axios";
 
+const loginFormRef = ref();
 const loginForm = reactive({
   username: "",
   password: "",
   isRemember: false,
 });
+
+const loginRules = {
+  username: [
+    {required: true, message: '请输入用户名/邮箱'}
+  ],
+  password: [
+    {required: true, message: '请输入密码'}
+  ]
+};
 
 const toRegisterPage = () => {
   router.push('/register');
@@ -67,15 +76,15 @@ const toResetPage = () => {
   router.push('/reset');
 };
 
-const login = async () => {
-  const res = await axios.post('/login.php', loginForm);
-  const {code, data} = res.data;
-  if (code === 200) {
-    ElMessage.success(`登录成功，欢迎 ${data.username}`);
-  } else {
-    ElMessage.warning("账号或密码错误");
-  }
-};
+const userLogin = () => {
+  loginFormRef.value.validate((isValid) => {
+    if (isValid) {
+      //登录逻辑
+    } else {
+      ElMessage.warning('请完整填写登录内容！')
+    }
+  });
+}
 
 </script>
 
