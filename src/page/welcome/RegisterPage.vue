@@ -80,10 +80,11 @@ import {reactive, ref} from 'vue';
 import {Lock, User, Message, Key} from "@element-plus/icons-vue";
 import {ElMessage} from "element-plus";
 import router from "@/router/index.js";
+import {registerUserByEmail, requestEmailCode} from "@/api/welcome/index.js";
 
 const isEmailValid = ref(false);
 const registerFormRef = ref();
-const coldTime = ref("0");
+const coldTime = ref(0);
 const registerFrom = reactive({
   username: "",
   password: "",
@@ -143,6 +144,7 @@ const toLoginPage = () => {
 
 const sendEmailCode = () => {
   countDown();
+  requestEmailCode(registerFrom.email, 'register');
 };
 
 
@@ -159,7 +161,11 @@ const countDown = () => {
 const register = () => {
   registerFormRef.value.validate((isValid) => {
     if (isValid) {
-      //注册逻辑
+      registerUserByEmail(registerFrom, () => {
+        setTimeout(() => {
+          router.push('/')
+        }, 2000)
+      });
     } else {
       ElMessage.warning('请完整填写注册表单内容！')
     }

@@ -50,6 +50,7 @@
 import {reactive, ref} from 'vue';
 import {Lock, User} from "@element-plus/icons-vue";
 import {ElMessage} from "element-plus";
+import {loginUser} from '@/api/index.js'
 import router from "@/router";
 
 const loginFormRef = ref();
@@ -80,8 +81,11 @@ const userLogin = () => {
   loginFormRef.value.validate((isValid) => {
     if (isValid) {
       //登录逻辑
+      loginUser(loginForm, () => {
+        window.location.href = '/';
+      });
     } else {
-      ElMessage.warning('请完整填写登录内容！')
+      ElMessage.warning('请完整填写登录内容！');
     }
   });
 }

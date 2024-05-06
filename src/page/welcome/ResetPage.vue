@@ -94,8 +94,9 @@ import {ref, reactive} from "vue";
 import {Key, Lock, Message} from "@element-plus/icons-vue";
 import router from "@/router/index.js";
 import {ElMessage} from "element-plus";
+import {confirmResetCode, requestEmailCode, resetUserPassword} from "@/api/welcome/index.js";
 
-const coldTime = ref("0");
+const coldTime = ref(0);
 const active = ref(0)
 const isEmailValid = ref(false);
 const resetFormRef = ref();
@@ -136,7 +137,7 @@ const resetRules = {
 const verifyCode = () => {
   resetFormRef.value.validate((isValid) => {
     if (isValid) {
-      active.value++
+      confirmResetCode(resetForm.email, resetForm.code, () => active.value++);
     } else {
       ElMessage.warning('请完整填写注册表单内容！');
     }
@@ -145,11 +146,18 @@ const verifyCode = () => {
 
 const sendEmailCode = () => {
   countDown();
+  requestEmailCode(resetForm.email, 'reset');
+
 };
 
 const doReset = () => {
   resetFormRef.value.validate((isValid) => {
     if (isValid) {
+      resetUserPassword(resetForm, () => {
+        setTimeout(() => {
+          router.push('/')
+        }, 2000)
+      });
     } else {
       ElMessage.warning('请完整填写注册表单内容！');
     }
