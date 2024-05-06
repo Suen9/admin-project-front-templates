@@ -81,7 +81,9 @@ const userLogin = () => {
   loginFormRef.value.validate((isValid) => {
     if (isValid) {
       //登录逻辑
-      loginUser(loginForm, () => router.push('/index'));
+      loginUser(loginForm, () => {
+        window.location.href = '/';
+      });
     } else {
       ElMessage.warning('请完整填写登录内容！');
     }

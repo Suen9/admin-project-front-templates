@@ -1,6 +1,8 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
-import {unauthorized} from "@/utils/tokenUtil.js";
-import config from "@/router/config.js";
+import {getAccessToken, unauthorized} from "@/utils/tokenUtil.js";
+import axios from "axios";
+
+const modules = import.meta.glob('../page/*/*.vue');
 const isUnauthorized = unauthorized();
 
 const routes = [
@@ -28,11 +30,22 @@ const routes = [
         ]
     },
     {
-        path: '/index',
+        path: '/user/list',
         name: 'index',
+        title: '首页',
         component: () => import('@/views/IndexView.vue'),
         children: []
     },
+    {
+        path: '/404',
+        name: '404',
+        component: () => import('../views/404.vue')
+    },
+    {
+        path: '/:pathMatch(.*)',
+        name: 'error',
+        redirect: '/404'
+    }
 ]
 
 const router = createRouter({
@@ -41,9 +54,16 @@ const router = createRouter({
 });
 
 export const init = async () => {
-    if (!isUnauthorized){
+    if (!isUnauthorized) {
         console.log("router初始化中");
-        await getMenu().forEach((route) => router.addRoute('index', route));
+        const response = await axios.get("http://localhost:8090/menu/nav", {
+            headers: {
+                "Authorization": `Bearer ${getAccessToken()}`
+            }
+        })
+        const menu = response.data.data;
+        await dynamicMenu(menu);
+        sessionStorage.setItem("menu", JSON.stringify(response.data.data));
     }
 }
 
@@ -62,7 +82,18 @@ router.beforeEach((to, from, next) => {
     }
 });
 
-const getMenu = () => {
-    return config;
-}
+const dynamicMenu = (menu) => {
+    if (!menu) return;
+    menu.forEach((item) => {
+        if (item.component) {
+            item.component = modules[`../page${item.component}.vue`]
+            router.addRoute("index", item)
+        }
+        if (item.children) {
+            dynamicMenu(item.children);
+        }
+    });
+};
+
+
 export default router;

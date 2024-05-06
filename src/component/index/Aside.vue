@@ -1,19 +1,22 @@
 <template>
+  <div style="width: 200px;height: 60px;position: fixed;top: 0;left: 0;">
+    <el-image style="padding: 5px" src="https://element-plus.org/images/element-plus-logo.svg"/>
+  </div>
   <div>
-    <el-menu style="height: calc(100vh - 110px);border-right: 0!important;overflow-y: auto;"
+    <el-menu style="height: calc(100vh - 110px);border-right: 0!important;overflow-y: auto;margin-top: 60px;"
              :default-active="$route.path"
              router>
       <div v-for="item in menuList" :key="item.name">
         <el-menu-item v-if="item.children.length === 0" :index="item.path">
           <el-icon>
-            <icon-menu/>
+            <component class="icons" :is="item.icon" ></component>
           </el-icon>
           <template #title>{{ item.title }}</template>
         </el-menu-item>
         <el-sub-menu v-if="item.children.length !== 0" :index="item.path">
           <template #title>
             <el-icon>
-              <location/>
+            <component class="icons" :is="item.icon" ></component>
             </el-icon>
             <span>{{ item.title }}</span>
           </template>
@@ -29,58 +32,7 @@
 </template>
 
 <script setup>
-import {
-  Menu as IconMenu,
-  Location,
-} from '@element-plus/icons-vue'
-import {reactive} from 'vue'
-
-const menuList = reactive(
-    [
-      {
-        path: '/user',
-        name: 'user',
-        redirect: '/user/list',
-        title: '用户',
-        component: () => import('@/views/IndexView.vue'),
-        children: [
-          {
-            path: '/user/list',
-            name: 'user-list',
-            title: '用户列表',
-            component: () => import('@/page/user/List.vue')
-          }
-        ]
-      },
-      {
-        path: '/content',
-        name: 'content',
-        title: '内容管理',
-        component: () => import('@/views/IndexView.vue'),
-        redirect: '/content/manage-images',
-        children: [
-          {
-            path: '/content/manage-images',
-            name: 'manage-images',
-            title: '管理图片',
-            component: () => import('@/page/content/Images.vue')
-          },
-          {
-            path: '/content/manage-comment',
-            name: 'manage-comment',
-            title: '管理评论',
-            component: () => import('@/page/content/Comment.vue')
-          }
-        ]
-      },
-      {
-        path: '/book',
-        name: 'book',
-        title: '图书列表',
-        component: () => import('@/page/book/List.vue'),
-        children: []
-      },
-    ])
+const menuList = JSON.parse(sessionStorage.getItem("menu"))
 </script>
 
 <style scoped>

@@ -18,7 +18,7 @@ const isNotAllowedRoute = () => {
 
 request.interceptors.request.use(
     config => {
-        if (getAccessToken() && isNotAllowedRoute()) {
+        if (getAccessToken() &&isNotAllowedRoute()) {
             config.headers['Authorization'] = `Bearer ${getAccessToken()}`;
         }
         return config;

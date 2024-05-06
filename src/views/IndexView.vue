@@ -1,14 +1,14 @@
 <template>
   <div class="common-layout">
     <el-container style="width: 100vw; height: 100vh">
-      <el-header style="border-bottom: 1px solid #DCDFE6;padding: 0">
-        <Header/>
-      </el-header>
+      <el-aside width="200px" style="padding: 0">
+        <Aside/>
+      </el-aside>
       <el-container>
-        <el-aside width="200px" style="padding: 0">
-          <Aside/>
-        </el-aside>
-        <el-main style="border-left: 1px solid #DCDFE6;padding: 0">
+        <el-header height="50px" style="border-left: 1px solid #F0F0F0;border-bottom: 1px solid #DCDFE6;padding: 0" >
+          <Header/>
+        </el-header>
+        <el-main style="background-color: #F1F2F5">
           <router-view></router-view>
         </el-main>
       </el-container>
